@@ -111,9 +111,9 @@ class DenoisingAutoencoder(nn.Module):
         total_loss = 0.0
         total_num = 0
         for batch_idx, (inputs, _) in enumerate(validloader):
-            inputs = inputs.view(inputs.size(0), -1).float()
-            if use_cuda:
-                inputs = inputs.cuda()
+            # inputs = inputs.view(inputs.size(0), -1).float()
+            # if use_cuda:
+            #     inputs = inputs.cuda()
             inputs = Variable(inputs)
             hidden = self.encode(inputs)
             if loss_type=="cross-entropy":
@@ -134,11 +134,11 @@ class DenoisingAutoencoder(nn.Module):
             train_loss = 0.0
             adjust_learning_rate(lr, optimizer, epoch)
             for batch_idx, (inputs, _) in enumerate(trainloader):
-                inputs = inputs.view(inputs.size(0), -1).float()
+                # inputs = inputs.view(inputs.size(0), -1).float()
                 inputs_corr = masking_noise(inputs, corrupt)
-                if use_cuda:
-                    inputs = inputs.cuda()
-                    inputs_corr = inputs_corr.cuda()
+                # if use_cuda:
+                #     inputs = inputs.cuda()
+                #     inputs_corr = inputs_corr.cuda()
                 optimizer.zero_grad()
                 inputs = Variable(inputs)
                 inputs_corr = Variable(inputs_corr)
@@ -156,9 +156,9 @@ class DenoisingAutoencoder(nn.Module):
             # validate
             valid_loss = 0.0
             for batch_idx, (inputs, _) in enumerate(validloader):
-                inputs = inputs.view(inputs.size(0), -1).float()
-                if use_cuda:
-                    inputs = inputs.cuda()
+                # inputs = inputs.view(inputs.size(0), -1).float()
+                # if use_cuda:
+                #     inputs = inputs.cuda()
                 inputs = Variable(inputs)
                 hidden = self.encode(inputs, train=False)
                 if loss_type=="cross-entropy":

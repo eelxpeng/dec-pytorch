@@ -6,18 +6,7 @@ from torchvision import datasets, transforms
 import numpy as np
 import argparse
 from lib.stackedDAE import StackedDAE
-
-class Scale(object):
-    """Scale Tensor according to the scale
-    """
-    def __init__(self, scale=1.0):
-        self.scale = scale
-
-    def __call__(self, pic):
-        return pic * self.scale
-
-    def __repr__(self):
-        return self.__class__.__name__ + '()'
+from lib.datasets import MNIST
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='VAE MNIST Example')
@@ -35,12 +24,11 @@ if __name__ == "__main__":
     # 255*0.02 = 5.1. transforms.ToTensor() coverts 255 -> 1.0
     # so add a customized Scale transform to multiple by 5.1
     train_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('./dataset/mnist', train=True, download=True,
-                       transform=transforms.Compose([transforms.ToTensor(), Scale(5.1)])),
-        batch_size=args.batch_size, shuffle=True, num_workers=2)
+        MNIST('./dataset/mnist', train=True, download=True),
+        batch_size=args.batch_size, shuffle=True, num_workers=0)
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('./dataset/mnist', train=False, transform=transforms.Compose([transforms.ToTensor(), Scale(5.1)])),
-        batch_size=args.batch_size, shuffle=False, num_workers=2)
+        MNIST('./dataset/mnist', train=False),
+        batch_size=args.batch_size, shuffle=False, num_workers=0)
 
     sdae = StackedDAE(input_dim=784, z_dim=10, binary=False,
         encodeLayer=[500,500,2000], decodeLayer=[2000,500,500], activation="relu", 

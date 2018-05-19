@@ -25,6 +25,9 @@ class Dataset(data.Dataset):
         self.target_transform = target_transform
         self.data = data
         self.labels = labels
+        if torch.cuda.is_available():
+            self.data = self.data.cuda()
+            self.labels = self.labels.cuda()
 
     def __getitem__(self, index):
         img, target = self.data[index], self.labels[index]
