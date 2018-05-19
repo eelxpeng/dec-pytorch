@@ -27,8 +27,13 @@ def buildNetwork(layers, activation="relu", dropout=0):
 
 def adjust_learning_rate(init_lr, optimizer, epoch):
     lr = init_lr * (0.1 ** (epoch//100))
+    toprint = True
     for param_group in optimizer.param_groups:
-        param_group["lr"] = lr
+        if param_group["lr"]!=lr:
+            param_group["lr"] = lr
+            if toprint:
+                print("Switching to learning rate %f" % lr)
+                toprint = False
 
 class StackedDAE(nn.Module):
     def __init__(self, input_dim=784, z_dim=10, binary=True,
@@ -84,7 +89,10 @@ class StackedDAE(nn.Module):
         for l in range(1, len(self.layers)):
             infeatures = self.layers[l-1]
             outfeatures = self.layers[l]
-            dae = DenoisingAutoencoder(infeatures, outfeatures, activation=self.activation, dropout=corrupt)
+            if l!= len(self.layers)-1:
+                dae = DenoisingAutoencoder(infeatures, outfeatures, activation=self.activation, dropout=corrupt)
+            else:
+                dae = DenoisingAutoencoder(infeatures, outfeatures, activation="none", dropout=0)
             print(dae)
             if l==1:
                 dae.fit(trloader, valoader, lr=lr, batch_size=batch_size, num_epochs=num_epochs, corrupt=corrupt, loss_type=loss_type)
@@ -143,7 +151,7 @@ class StackedDAE(nn.Module):
             self.cuda()
         print("=====Stacked Denoising Autoencoding Layer=======")
         # optimizer = optim.Adam(filter(lambda p: p.requires_grad, self.parameters()), lr=lr)
-        optiizer = optim.SGD(filter(lambda p: p.requires_grad, self.parameters()), lr=lr, momentum=0.9)
+        optimizer = optim.SGD(filter(lambda p: p.requires_grad, self.parameters()), lr=lr, momentum=0.9)
         if loss_type=="mse":
             criterion = MSELoss()
         elif loss_type=="cross-entropy":
@@ -164,7 +172,7 @@ class StackedDAE(nn.Module):
             total_num += inputs.size()[0]
 
         valid_loss = total_loss / total_num
-        print("#Epoch 0: Valid Reconstruct Loss: %.3f" % (valid_loss))
+        print("#Epoch 0: Valid Reconstruct Loss: %.4f" % (valid_loss))
         self.train()
         for epoch in range(num_epochs):
             # train 1 epoch
@@ -198,7 +206,7 @@ class StackedDAE(nn.Module):
                 valid_recon_loss = criterion(outputs, inputs)
                 valid_loss += valid_recon_loss.data * len(inputs)
 
-            print("#Epoch %3d: Reconstruct Loss: %.3f, Valid Reconstruct Loss: %.3f" % (
+            print("#Epoch %3d: Reconstruct Loss: %.4f, Valid Reconstruct Loss: %.4f" % (
                 epoch+1, train_loss / len(trainloader.dataset), valid_loss / len(validloader.dataset)))
 
 

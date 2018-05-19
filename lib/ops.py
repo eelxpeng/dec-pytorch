@@ -11,7 +11,7 @@ class MSELoss(nn.Module):
         super(self.__class__, self).__init__()
 
     def forward(self, input, target):
-        return 0.5 * torch.mean(torch.sum((input-target)**2, 1))
+        return 0.5 * torch.mean((input-target)**2)
 
 class BCELoss(nn.Module):
     def __init__(self):
