@@ -105,10 +105,10 @@ class StackedDAE(nn.Module):
             valid_x = dae.encodeBatch(valoader)
             trainset = Dataset(data_x, data_x)
             trloader = torch.utils.data.DataLoader(
-                trainset, batch_size=batch_size, shuffle=True, num_workers=2)
+                trainset, batch_size=batch_size, shuffle=True, num_workers=0)
             validset = Dataset(valid_x, valid_x)
             valoader = torch.utils.data.DataLoader(
-                validset, batch_size=1000, shuffle=False, num_workers=2)
+                validset, batch_size=1000, shuffle=False, num_workers=0)
             daeLayers.append(dae)
 
         self.copyParam(daeLayers)
