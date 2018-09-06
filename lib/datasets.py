@@ -59,6 +59,7 @@ class MNIST(data.Dataset):
             self.train_data, self.train_labels = torch.load(
                 os.path.join(self.root, self.processed_folder, self.training_file))
             self.train_data = self.train_data.view(self.train_data.size(0), -1).float()*0.02
+            # self.train_data = self.train_data.view(self.train_data.size(0), -1).float()/255
             self.train_labels = self.train_labels.int()
             if self.use_cuda:
                 self.train_data = self.train_data.cuda()
@@ -67,6 +68,7 @@ class MNIST(data.Dataset):
             self.test_data, self.test_labels = torch.load(
                 os.path.join(self.root, self.processed_folder, self.test_file))
             self.test_data = self.test_data.view(self.test_data.size(0), -1).float()*0.02
+            # self.test_data = self.test_data.view(self.test_data.size(0), -1).float()/255
             self.test_labels = self.test_labels.int()
             if self.use_cuda:
                 self.test_data = self.test_data.cuda()
